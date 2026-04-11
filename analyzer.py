@@ -77,7 +77,7 @@ def _extract_schema_data(soup):
 
 async def audit_website(url):
     async with async_playwright() as p:
-        browser = await p.chromium.launch()
+        browser = await p.chromium.launch(headless=True, args=["--no-sandbox", "--disable-setuid-sandbox"])
         context = await browser.new_context(
             user_agent="Mozilla/5.0 (iPhone; CPU iPhone OS 14_8 like Mac OS X) AppleWebKit/605.1.15",
             viewport={'width': 375, 'height': 812}
