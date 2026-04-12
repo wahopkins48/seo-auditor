@@ -2,7 +2,7 @@
 # exit on error
 set -o errexit
 
-# Install system dependencies for WeasyPrint
+# 1. Install system dependencies for the PDF engine (WeasyPrint)
 apt-get update && apt-get install -y \
     python3-pip \
     python3-cffi \
@@ -12,8 +12,8 @@ apt-get update && apt-get install -y \
     libpangoft2-1.0-0 \
     libpangocairo-1.0-0
 
-# Install Python dependencies
+# 2. Install Python packages
 pip install -r requirements.txt
 
-# Install Playwright browser and its specific system dependencies
+# 3. Install the browser and its specific Linux dependencies
 playwright install --with-deps chromium
