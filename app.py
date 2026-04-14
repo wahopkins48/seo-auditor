@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, send_file
 import asyncio
-import os
-import tempfile
+from io import BytesIO
+
 from analyzer import audit_website
 from weasyprint import HTML
 
@@ -11,6 +11,8 @@ app = Flask(__name__)
 @app.route('/')
 def home():
     return render_template('index.html')
+
+
 @app.route('/audit')
 def do_audit():
     url = (request.args.get('url') or '').strip()
@@ -29,17 +31,13 @@ def do_audit():
 
     pdf_buf = BytesIO()
     HTML(string=rendered_html, base_url=request.url_root).write_pdf(pdf_buf)
-    pdf_buf = BytesIO()
-    HTML(string=rendered_html, base_url=request.url_root).write_pdf(pdf_buf)
     pdf_buf.seek(0)
-    return send_file(pdf_buf, as_attachment=True, download_name='seo_report.pdf', mimetype='application/pdf')
+    return send_file(
+        pdf_buf,
+        as_attachment=True,
+        download_name='seo_report.pdf',
+        mimetype='application/pdf',
     )
-        )
-    finally:
-        try:
-            os.remove(pdf_path)
-        except OSError:
-            pass
 
 
 if __name__ == '__main__':
