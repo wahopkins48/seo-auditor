@@ -11,8 +11,6 @@ app = Flask(__name__)
 @app.route('/')
 def home():
     return render_template('index.html')
-
-
 @app.route('/audit')
 def do_audit():
     url = (request.args.get('url') or '').strip()
@@ -29,16 +27,15 @@ def do_audit():
 
     rendered_html = render_template('report.html', **result)
 
-    with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp:
-        pdf_path = tmp.name
-
-    try:
-        HTML(string=rendered_html, base_url=request.url_root).write_pdf(pdf_path)
-        return send_file(
-            pdf_path,
-            as_attachment=True,
-            download_name='seo_report.pdf',
-            mimetype='application/pdf'
+    pdf_buf = BytesIO()
+    HTML(string=rendered_html, base_url=request.url_root).write_pdf(pdf_buf)
+    pdf_buf.seek(0)
+    return send_file(
+        pdf_buf,
+        as_attachment=True,
+        download_name='seo_report.pdf',
+        mimetype='application/pdf',
+    )
         )
     finally:
         try:
