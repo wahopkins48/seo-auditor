@@ -81,20 +81,22 @@ def _extract_schema_data(soup):
 
 async def audit_website(url):
     async with async_playwright() as p:
-        browser = await p.chromium.launch(
-            headless=True,
-            args=['--no-sandbox', '--disable-setuid-sandbox']
-        )
-
-        context = await browser.new_context(
-            user_agent='Mozilla/5.0 (iPhone; CPU iPhone OS 14_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Mobile/15E148 Safari/604.1',
-            viewport={'width': 375, 'height': 812},
-            ignore_https_errors=True,
-        )
-
-        page = await context.new_page()
-
+        browser = None
+        context = None
         try:
+            browser = await p.chromium.launch(
+                headless=True,
+                args=['--no-sandbox', '--disable-setuid-sandbox']
+            )
+
+            context = await browser.new_context(
+                user_agent='Mozilla/5.0 (iPhone; CPU iPhone OS 14_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Mobile/15E148 Safari/604.1',
+                viewport={'width': 375, 'height': 812},
+                ignore_https_errors=True,
+            )
+
+            page = await context.new_page()
+
             start_time = time.time()
             response = await page.goto(url, timeout=60000, wait_until='networkidle')
             load_time = round(time.time() - start_time, 2)
@@ -213,7 +215,9 @@ async def audit_website(url):
         except Exception as e:
             report = {'status': 'Error', 'message': str(e)}
         finally:
-            await context.close()
-            await browser.close()
+            if context is not None:
+                await context.close()
+            if browser is not None:
+                await browser.close()
 
         return report
