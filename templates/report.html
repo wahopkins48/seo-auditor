@@ -142,6 +142,13 @@
     <h2 style="margin-bottom: 0;">Executive Audit for: {{ url }}</h2>
     <p class="note">Generated from mobile-first rendering and technical page analysis.</p>
 
+    <div class="score-box">
+  {{ score }}
+</div>
+
+<p><strong>Current Health Score:</strong> {{ score }}/100</p>
+
+
     <div class="pillar">
         <div class="pillar-header">Pillar 1: Technical & Rendering</div>
         <div class="row"><span class="label">JS Reliance</span><span class="value">{{ js_reliance }}</span></div>
